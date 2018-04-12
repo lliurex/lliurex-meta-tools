@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+import deb822
+import os
+import os.path
+from string import Template
+class DebhelperLliurexMeta:
+	def __init__(self):
+		self.packages = []
+
+	def getPackages(self):
+		self.packages = []
+		fdcontrol = open('debian/control','r')
+		for stanza in deb822.Packages.iter_paragraphs(fdcontrol):
+			if 'Package' in stanza:
+				self.packages.append(stanza)
+		fdcontrol.close()
+
+	def writeFlavours(self):
+		for package in self.packages:
+			if not 'Lliurex-Flavours' in package:
+				continue
+			destfolder = os.path.join('debian',package['Package'],'usr','share','lliurex-cdd',package['Package'])
+			if not os.path.exists(destfolder):
+				os.makedirs(destfolder)
+			fd = open(os.path.join(destfolder,'cddflavour'),'w')
+			listflavours = [flavour.strip() for flavour in package['Lliurex-Flavours'].split(',')]
+			for flavour in listflavours:
+				fd.write(flavour+"\n")
+			fd.close()
+
+	def writePreinstFile(self):
+		template = Template('''
+			case "$1" in 
+				install)
+					echo " + $packageName \t $(date +"%x %R:%S")" >> /etc/lliurex-cdd-version
+				;;
+			esac
+			''')
+		for package in self.packages:
+			destpath = os.path.join('debian',package['Package']+".preinst.debhelper")
+			fd = open(destpath,'a')
+			fd.write(template.safe_substitute(packageName=package['Package']))
+			fd.close()
+
+	def writePostrmFile(self):
+		template = Template('''
+			case "$1" in 
+				remove)
+					echo " - $packageName \t $(date +"%x %R:%S")" >> /etc/lliurex-cdd-version
+				;;
+			esac
+			''')
+		for package in self.packages:
+			destpath = os.path.join('debian',package['Package']+".postrm.debhelper")
+			fd = open(destpath,'a')
+			fd.write(template.safe_substitute(packageName=package['Package']))
+			fd.close()
+
+	def run(self):
+		self.getPackages()
+		self.writeFlavours()
+		self.writePreinstFile()
+		self.writePostrmFile()
+
+if __name__ == '__main__':
+	dhllxmeta = DebhelperLliurexMeta()
+	dhllxmeta.run()

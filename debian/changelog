@@ -1,3 +1,9 @@
+lliurex-meta-tools (0.4) focal; urgency=medium
+
+  * Migrate to focal
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Wed, 02 Sep 2020 21:44:59 +0200
+
 lliurex-meta-tools (0.3) bionic; urgency=medium
 
   * Project migrate to bionic.

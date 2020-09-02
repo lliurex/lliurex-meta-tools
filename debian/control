@@ -1,0 +1,17 @@
+Source: lliurex-meta-tools
+Section: admin
+Priority: optional
+Maintainer: LliureX Team <lliurex@gva.es>
+Build-Depends: debhelper (>= 10),
+               dh-python,
+               python3-setuptools,
+               python3-all
+Standards-Version: 4.1.2
+Homepage: http://lliurex.net
+Vcs-Git: https://github.com/lliurex/lliurex-meta-tools
+
+Package: lliurex-meta-tools
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, python3, python3-debian
+Description: Tools to generate LliureX metapackages
+ This package include debhelper to generate needed files by lliurex-version
